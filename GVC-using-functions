@@ -1,0 +1,118 @@
+let shootingStar = false; // Checks if a shooting star is active
+let starX, starY; // Stores the star's position
+let starSpeed = 8; // Controls the star's speed
+let nextStarTime = 0; // Time before the next star appears
+
+function setup() {
+  createCanvas(600, 400);
+  nextStarTime = frameCount + 180; // Delay before first star
+}
+
+function draw() {
+  background(15, 20, 70); // Night sky
+
+  noStroke();
+  fill(255, 245, 190);
+  circle(500, 70, 70); // Moon
+
+  noStroke();
+  fill(25, 75, 45);
+  rect(0, 280, 600, 130); // Grass
+
+  // Draw stars
+  drawStar(70, 50, 3);
+  drawStar(150, 70, 4);
+  drawStar(230, 60, 3);
+  drawStar(290, 80, 5);
+  drawStar(350, 60, 2);
+
+  // Draw flowers
+  drawFlower(80, 330, 40);
+  drawFlower(150, 300, 50);
+  drawFlower(250, 320, 70);
+  drawFlower(340, 300, 40);
+  drawFlower(450, 310, 50);
+
+  // Moving fireflies
+  drawFirefly(150 + sin(frameCount * 0.05) * 20, 220);
+  drawFirefly(250 + sin(frameCount * 0.05) * 50, 220);
+  drawFirefly(350 + sin(frameCount * 0.05) * 20, 240);
+
+  // Spawn a shooting star after the timer
+  if (!shootingStar && frameCount >= nextStarTime) {
+    shootingStar = true;
+    starX = random(40, 450);
+    starY = random(20, 130);
+  }
+
+  // Move the shooting star diagonally
+  if (shootingStar) {
+    drawShootingStar(starX, starY);
+    starX += starSpeed;
+    starY += starSpeed * 0.5;
+
+    // Remove the star and set the next timer
+    if (starX > width || starY > 280) {
+      shootingStar = false;
+      nextStarTime = frameCount + random(180, 420);
+    }
+  }
+}
+
+// Draws a small star
+function drawStar(x, y, size) {
+  noStroke();
+  fill(255, 255, 210);
+  circle(x, y, size * 2);
+}
+
+// Draws a flower with six petals
+function drawFlower(x, y, size) {
+  let petalSize = calculatePetalSize(size);
+
+  stroke(50, 130, 70);
+  strokeWeight(3);
+  line(x, y, x, y + size); // Stem
+
+  noStroke();
+  fill(180, 130, 220);
+
+  // Loop places the six petals in a circle
+  for (let i = 0; i < 6; i++) {
+    let angle = TWO_PI * i / 6;
+    let petalX = x + cos(angle) * petalSize;
+    let petalY = y + sin(angle) * petalSize;
+    circle(petalX, petalY, petalSize);
+  }
+
+  fill(255, 220, 100);
+  circle(x, y, petalSize); // Flower center
+}
+
+// Calculates the petal size
+function calculatePetalSize(size) {
+  let result = size * 0.4;
+  return result;
+}
+
+// Draws a glowing firefly
+function drawFirefly(x, y) {
+  let glowSize = 5 + sin(frameCount * 0.1) * 2;
+
+  noStroke();
+  fill(255, 240, 100, 70);
+  circle(x, y, glowSize * 4); // Outer glow
+
+  fill(255, 250, 100);
+  circle(x, y, glowSize); // Inner light
+}
+
+// Draws a shooting star with a trail
+function drawShootingStar(x, y) {
+  stroke(255, 255, 220);
+  strokeWeight(2);
+  line(x, y, x - 35, y - 18);
+
+  fill(255, 255, 220);
+  circle(x, y, 5);
+}
